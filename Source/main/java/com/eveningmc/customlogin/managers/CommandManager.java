@@ -46,8 +46,18 @@ public class CommandManager implements CommandExecutor
 		{
 
 			this.getCommands().add(command);
-			Customlogin.getInstance().getCommand(command.getCommand()).setExecutor(this);
-
+			if(Customlogin.getInstance().getCommand(command.getCommand()) == null)
+			{ 
+				
+				System.out.println("Command null"); 
+				
+				} else 
+				{ 
+					
+					Customlogin.getInstance().getCommand(command.getCommand()).setExecutor(this);
+				
+			}
+			
 		}
 
 	}
