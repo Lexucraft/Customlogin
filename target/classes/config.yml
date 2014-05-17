@@ -1,11 +1,10 @@
 Auto-Update: false
+Economy-Support: true
+Economy-Price: 500
 Debug: false
-Update-Notifacaitons: true
+Notify-Updates: true
 User-Files: true
-
 Messages:
-    Prefix: '&9Customlogin > '
-    Login: '&a+ &b(PLAYER)'
-    Logout: '&c- &b(PLAYER)'
-    Kick: '&c- &b(PLAYER)'
-    Ban: '&c- &b(PLAYER)'
+  Prefix: '&9Customlogin > '
+  Login: '&a+ &b(PLAYER)'
+  Logout: '&c- &b(PLAYER)'

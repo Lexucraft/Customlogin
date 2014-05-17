@@ -1,8 +1,10 @@
 main: com.eveningmc.customlogin.Customlogin
 name: Customlogin
 authors: [eveninglight, Lexucraft, EveningMC]
-version: 1.0.0
+version: 1.0.1
 
 commands:
-    customlogin:
-        description: Main command for the plugin!
+  customlogin:
+    description: Main command for the plugin!
+    aliases: [cl]
+    usage: /<command> <args>

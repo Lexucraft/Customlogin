@@ -6,7 +6,7 @@
         <groupId>com.eveningmc</groupId>
         <artifactId>customlogin</artifactId>
         <name>Customlogin</name>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <description>Customize the join/quit messages of your server.</description>
         <properties>
                 

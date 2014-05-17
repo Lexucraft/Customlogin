@@ -1,56 +1,49 @@
 package com.eveningmc.customlogin.commands;
 
-import java.util.HashMap;
-
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.eveningmc.customlogin.Customlogin;
-import com.eveningmc.customlogin.base.BaseCommand;
-import com.eveningmc.customlogin.exceptions.InsufficientPermissionException;
-import com.eveningmc.customlogin.exceptions.NotEnoughArgumentsException;
-import com.eveningmc.customlogin.exceptions.PlayerOnlyException;
-import com.eveningmc.customlogin.exceptions.TooManyArgumentsException;
+import com.eveningmc.customlogin.configs.PlayerConfig;
+import com.eveningmc.customlogin.util.Message;
 
-public class CommandCustomlogin extends BaseCommand
+public class CommandCustomlogin implements CommandExecutor
 {
 	
-	private HashMap < String, Integer > helpInfo;
+	private Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("Customlogin");
 	
 	public CommandCustomlogin()
-    {
-		
-	    super("customlogin", "base", "Main command for Customlogin!", "/customlogin <args>", "customlogin");
-	    
+    {   
     }
 	
-	
-	
-	@Override
-    public void onCommand(CommandSender sender, Command command, String label, String[] args) 
-    		throws InsufficientPermissionException, NotEnoughArgumentsException, PlayerOnlyException, TooManyArgumentsException
+    public boolean onCommand(CommandSender sender, Command command, String label, String args[])
     {
-		
-		Player player = (Player) sender;
-		
-		if(sender.hasPermission(this.getPermission()))
+    	
+		if(sender.hasPermission("customlogin.base"))
 		{
 			
 			if(args.length < 1)
 			{
 				
-				player.sendMessage(Customlogin.getInstance().getMessage().formatMessage("Plugin by EveningMC / Eveninglight | Version: " + Customlogin.getInstance().getDescription().getVersion()));
-				player.sendMessage(Customlogin.getInstance().getMessage().formatMessage("Type /customlogin help < Player | Staff | Admin > for command help!"));
+				sender.sendMessage(Message.formatMessage("Plugin by EveningMC / Eveninglight | Version: " + Customlogin.getInstance().getDescription().getVersion()));
+				sender.sendMessage(Message.formatMessage("Type /customlogin help <Player|Staff|Admin> for command help!"));
+				return true;
+				
 				
 			/* Help Command */	
 				
 			} else if(args[0].equalsIgnoreCase("help"))
 			{
-				if(args.length < 1)
+				
+				if(!(args.length >= 1))
 				{
 					
-					player.sendMessage(Customlogin.getInstance().getMessage().formatMessage("Type /customlogin help < Player | Staff | Admin > for command help!"));
+					sender.sendMessage(Message.formatMessage("Type /customlogin help <Player|Staff|Admin> for Help"));
+					return true;
 					
 				}
 				
@@ -60,14 +53,16 @@ public class CommandCustomlogin extends BaseCommand
 					if(args[1].toLowerCase().startsWith("player"))
 					{
 					
-						player.sendMessage(Customlogin.getInstance().getMessage().formatMessage("Player Commands:"));
-					
+						sender.sendMessage(Message.formatMessage("Player Commands:"));
+						return true;
+						
 					}
 					
 				} else
 				{
 					
-					throw new InsufficientPermissionException();
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					return true;
 					
 				}
 				
@@ -77,14 +72,17 @@ public class CommandCustomlogin extends BaseCommand
 					if(args[1].toLowerCase().startsWith("staff"))
 					{
 					
-						player.sendMessage(Customlogin.getInstance().getMessage().formatMessage("Staff Commands:"));
-					
+						sender.sendMessage(Message.formatMessage("Staff Commands:"));
+						sender.sendMessage(Message.format("Set: /customlogin set <prefix|join|quit> - Change Messages!"));
+						return true;
+						
 					}
 					
 				} else
 				{
-					
-					throw new InsufficientPermissionException();
+
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					return true;
 					
 				}
 				
@@ -94,20 +92,300 @@ public class CommandCustomlogin extends BaseCommand
 					if(args[1].toLowerCase().startsWith("admin"))
 					{
 						
-						player.sendMessage(Customlogin.getInstance().getMessage().formatMessage("Admin Commands:"));
-						player.sendMessage(Customlogin.getInstance().getMessage().format("Reload: /customlogin reload - Reload the plugin!"));
-					
+						sender.sendMessage(Message.formatMessage("Admin Commands:"));
+						sender.sendMessage(Message.format("Reload: /customlogin reload - Reload the plugin!"));
+						return true;
+						
 					} else
 					{
 						
-						player.sendMessage(Customlogin.getInstance().getMessage().formatError(args[1] + "is an invalid page, type /customlogin help < Player | Staff | Admin >"));
+						sender.sendMessage(Message.formatError("That page is invalid page, type /customlogin help <Player|Staff|Admin>"));
+						return true;
 						
 					}
 					
 				} else
 				{
+
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					return true;
 					
-					throw new InsufficientPermissionException();
+				}
+				
+			} 
+			
+			
+			/* Reload Command */
+			else if(args[0].equalsIgnoreCase("reload"))
+			{
+				
+				if(sender.hasPermission("customlogin.admin.reload"))
+				{
+					
+					sender.sendMessage(Message.formatMessage("Reloading plugin..."));
+					Bukkit.getServer().getPluginManager().disablePlugin(plugin);
+					Bukkit.getServer().getPluginManager().enablePlugin(plugin);
+					sender.sendMessage(Message.formatMessage("Plugin reloaded!"));
+					
+				} else
+				{
+					
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					
+				}
+				
+			}
+			
+			
+			/* Message Change Command */
+			else if(args[0].equalsIgnoreCase("set"))
+			{
+				
+				if(!(args.length > 1))
+				{
+					
+					sender.sendMessage(Message.formatMessage("Type /customlogin set <Prefix|Join|Quit> to change a message!"));
+					return true;
+					
+				}
+				
+				if(sender.hasPermission("customlogin.set.prefix"))
+				{
+				
+					if(args[1].toLowerCase().startsWith("prefix"))
+					{
+						
+						if(args.length > 1)
+						{
+							
+							try
+							{
+								
+								Customlogin.getInstance().getConfig().set("Messages.Prefix", Message.toString(args));
+								Customlogin.getInstance().saveConfig();
+								sender.sendMessage(Message.formatMessage("Prefix changed!"));
+								
+							} catch (Exception e)
+							{
+								
+								e.printStackTrace();
+								
+							}
+							
+						}
+						
+					}
+					
+				} else
+				{
+
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					return true;
+					
+				}
+				
+				if(sender.hasPermission("customlogin.set.join"))
+				{
+				
+					if(args[1].toLowerCase().startsWith("join"))
+					{
+						
+						if(args.length > 1)
+						{
+							
+							try
+							{
+								
+								Customlogin.getInstance().getConfig().set("Messages.Login", Message.toString(args));
+								Customlogin.getInstance().saveConfig();
+								sender.sendMessage(Message.formatMessage("Join message changed!"));
+								
+							} catch (Exception e)
+							{
+								
+								e.printStackTrace();
+								
+							}
+							
+						}
+						
+						return true;
+						
+					}
+					
+				} else
+				{
+
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					return true;
+					
+				}
+				
+				if(sender.hasPermission("customlogin.set.quit"))
+				{
+				
+					if(args[1].toLowerCase().startsWith("quit"))
+					{
+						
+						if(args.length > 1)
+						{
+							
+							try
+							{
+								
+								Customlogin.getInstance().getConfig().set("Messages.Logout", Message.toString(args));
+								Customlogin.getInstance().saveConfig();
+								sender.sendMessage(Message.formatMessage("Quit message changed!"));
+								
+							} catch (Exception e)
+							{
+								
+								e.printStackTrace();
+								
+							}
+							
+						}
+						return true;
+						
+					}
+					
+				} else
+				{
+
+					sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+					return true;
+					
+				}
+				
+			}
+			
+			
+			/* Personal Message Change Command */
+			else if(args[0].equalsIgnoreCase("setp"))
+			{
+				
+				if(!(sender instanceof Player))
+				{
+					
+					sender.sendMessage(Message.formatError("Only ingame players can use this command"));
+					
+				} else
+				{
+					
+					if(!(args.length > 1))
+					{
+					
+						sender.sendMessage(Message.formatMessage("Type /customlogin setp <Prefix|Join|Quit> to change a message!"));
+						return true;
+					
+					}
+				
+					if(sender.hasPermission("customlogin.setpersonal.prefix"))
+					{
+					
+						if(args[1].toLowerCase().startsWith("prefix"))
+						{
+						
+							if(args.length > 1)
+							{
+							
+								try
+								{
+
+									PlayerConfig.getConfig().set("Messages.Prefix", Message.toString(args));
+									PlayerConfig.save();
+									sender.sendMessage(Message.formatMessage("Prefix changed!"));
+								
+								} catch (Exception e)
+								{
+								
+									e.printStackTrace();
+								
+								}
+							
+							}
+						
+						}
+					
+					} else
+					{
+
+						sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+						return true;
+					
+					}
+				
+					if(sender.hasPermission("customlogin.setpersonal.join"))
+					{
+				
+						if(args[1].toLowerCase().startsWith("join"))
+						{
+						
+							if(args.length > 1)
+							{
+							
+								try
+								{
+
+									PlayerConfig.getConfig().set("Messages.Login", Message.toString(args));
+									PlayerConfig.save();
+									sender.sendMessage(Message.formatMessage("Join message changed!"));
+								
+								} catch (Exception e)
+								{
+								
+									e.printStackTrace();
+								
+								}
+							
+							}
+						
+							return true;
+						
+						}
+					
+					} else
+					{
+
+						sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+						return true;
+					
+					}
+				
+					if(sender.hasPermission("customlogin.setpersonal.quit"))
+					{
+				
+						if(args[1].toLowerCase().startsWith("quit"))
+						{
+						
+							if(args.length > 1)
+							{
+							
+								try
+								{
+								
+									PlayerConfig.getConfig().set("Messages.Logout", Message.toString(args));
+									PlayerConfig.save();
+									sender.sendMessage(Message.formatMessage("Quit message changed!"));
+								
+								} catch (Exception e)
+								{
+								
+									e.printStackTrace();
+								
+								}
+							
+							}
+							return true;
+						
+						}
+					
+					} else
+					{
+
+						sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+						return true;
+					}
 					
 				}
 				
@@ -115,10 +393,13 @@ public class CommandCustomlogin extends BaseCommand
 			
 		} else
 		{
-			
-			throw new InsufficientPermissionException();
+
+			sender.sendMessage(Message.formatError("You do not have the required permissions to execute this command!"));
+			return true;
 			
 		}
+		
+		return true;
 		
     }	
 	

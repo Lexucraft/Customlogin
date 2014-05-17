@@ -2,68 +2,94 @@ package com.eveningmc.customlogin.util;
 
 import java.util.logging.Level;
 
+import org.bukkit.ChatColor;
+
 import com.eveningmc.customlogin.Customlogin;
 
 public class Message
 {
 	
-	public void log(String message)
+	public static void log(String message)
 	{
 		
 		Customlogin.getInstance().getLogger().info(message);
 		
 	}
 	
-	public void log(Level level, String message)
+	public static void log(Level level, String message)
 	{
 		
 		Customlogin.getInstance().getLogger().log(level, message);
 		
 	}
 	
-	public void debug(String message)
+	public static void debug(String message)
 	{
 		
 		if(Customlogin.getInstance().getConfig().getString("Debug") != null)
 		{
 			
-			this.log("< DEBUG > " + message);
+			log("< DEBUG > " + message);
 			
 		}
 		
 	}
 	
-	public void debug(Level level, String message)
+	public static void debug(Level level, String message)
 	{
 		
 		if(Customlogin.getInstance().getConfig().getString("Debug") != null)
 		{
 			
-			this.log(level, "< DEBUG > " + message);
+			log(level, "< DEBUG > " + message);
 			
 		}
 		
 	}
 	
-	public String format(String message)
+	public static String format(String message)
 	{
 		
-		message = message.replaceAll("&", "\247");
-		return message;
+		return ChatColor.translateAlternateColorCodes('&', message);
 		
 	}
 	
-	public String formatMessage(String message)
+	public static String formatMessage(String message)
 	{
+		
+		return (new StringBuilder(String.valueOf(format((new StringBuilder("&9")).append(Customlogin.getInstance().getName()).append(" > &a").toString())))).append(message).toString();
+		
+	}
+	
+	public static String formatError(String error)
+	{
+		
+		return (new StringBuilder(String.valueOf(format((new StringBuilder("&9")).append(Customlogin.getInstance().getName()).append(" > &c").toString())))).append(error).toString();
+		
+	}
+	
+	public static String toString(String arguments[])
+	{
+		
+		String returnString = "";
+		for(int count = 2; count < arguments.length; count++)
+		{
 
-		return this.format("&9" + Customlogin.getInstance().getDescription().getName() + " > &a" + message);
-		
-	}
-	
-	public String formatError(String error)
-	{
-		
-		return this.format("&9" + Customlogin.getInstance().getDescription().getName() + " > &c" + error);
+			if(count == 2)
+			{
+				
+				returnString = arguments[count];
+				
+			} else
+			{
+				
+				returnString = returnString + " " + arguments[count];
+				
+			}
+
+		}
+
+		return returnString;
 		
 	}
 	
