@@ -26,18 +26,18 @@ public class onJoin implements Listener
     @EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) throws IOException
 	{
-    	
+		
     	if(Customlogin.getInstance().getConfig().getBoolean("User-Files"))
     	{
     		
-    		PlayerConfig config = new PlayerConfig("/userdata/", e.getPlayer().getName() + ".yml");
+    		PlayerConfig config = new PlayerConfig(e.getPlayer().getName() + ".yml");
     		
-    		e.setJoinMessage(Message.format(PlayerConfig.getConfig().getString("Messages.Prefix") + PlayerConfig.getConfig().getString("Messages.Login").replace("(PLAYER)", e.getPlayer().getName())));
+    		e.setJoinMessage(Message.format(PlayerConfig.getConfig(e.getPlayer().getName()).getString("Messages.Prefix").replace("(PLAYER)", e.getPlayer().getName()) + PlayerConfig.getConfig(e.getPlayer().getName()).getString("Messages.Login").replace("(PLAYER)", e.getPlayer().getName())));
     	
     	} else
     	{
     		
-    		e.setJoinMessage(Message.format(Customlogin.getInstance().getConfig().getString("Messages.Prefix") + Customlogin.getInstance().getConfig().getString("Messages.Login").replace("(PLAYER)", e.getPlayer().getName())));
+    		e.setJoinMessage(Message.format(Customlogin.getInstance().getConfig().getString("Messages.Prefix").replace("(PLAYER)", e.getPlayer().getName()) + Customlogin.getInstance().getConfig().getString("Messages.Login").replace("(PLAYER)", e.getPlayer().getName())));
     		
     	}
     	

@@ -18,29 +18,20 @@ public class PlayerConfig
 	private static File userData;
 	private static FileConfiguration config;
 	
+	private static String playerName = null;
+	
 	public PlayerConfig(String fileName)
 	{
 		
 		PlayerConfig.fileName = fileName;
-		playerDir = null;
+		playerDir = new File(Customlogin.getInstance().getDataFolder(), "/userdata/");
 		userData = null;
 		config = null;
 		reload();
 		
 	}
 	
-	public PlayerConfig(String folder, String fileName)
-	{
-		
-		PlayerConfig.fileName = fileName;
-		playerDir = new File(Customlogin.getInstance().getDataFolder(), folder);
-		userData = null;
-		config = null;
-		reload();
-		
-	}
-	
-	public static FileConfiguration getConfig()
+	public static FileConfiguration getConfig(String player)
 	{
 		
 		if(config == null)
@@ -104,7 +95,7 @@ public class PlayerConfig
 				
 			}
 			
-			save();
+			save(playerName);
 			
 		}
 		
@@ -112,10 +103,10 @@ public class PlayerConfig
 		
 	}
 	
-	public static void save()
+	public static void save(String player)
 	{
 		
-		if(config == null || userData == null)
+		if(config == null)
 		{
 			
 			return;
@@ -139,7 +130,7 @@ public class PlayerConfig
 	public static void set(String path, Object o)
 	{
 		
-		getConfig().set(path, o);
+		getConfig(playerName).set(path, o);
 		
 	}
 	

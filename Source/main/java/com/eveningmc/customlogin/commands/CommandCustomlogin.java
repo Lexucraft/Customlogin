@@ -39,7 +39,7 @@ public class CommandCustomlogin implements CommandExecutor
 			} else if(args[0].equalsIgnoreCase("help"))
 			{
 				
-				if(!(args.length >= 1))
+				if(args.length < 1)
 				{
 					
 					sender.sendMessage(Message.formatMessage("Type /customlogin help <Player|Staff|Admin> for Help"));
@@ -141,7 +141,7 @@ public class CommandCustomlogin implements CommandExecutor
 			else if(args[0].equalsIgnoreCase("set"))
 			{
 				
-				if(!(args.length > 1))
+				if(args.length < 0)
 				{
 					
 					sender.sendMessage(Message.formatMessage("Type /customlogin set <Prefix|Join|Quit> to change a message!"));
@@ -272,6 +272,8 @@ public class CommandCustomlogin implements CommandExecutor
 				} else
 				{
 					
+					Player player = (Player) sender;
+					
 					if(!(args.length > 1))
 					{
 					
@@ -291,9 +293,9 @@ public class CommandCustomlogin implements CommandExecutor
 							
 								try
 								{
-
-									PlayerConfig.getConfig().set("Messages.Prefix", Message.toString(args));
-									PlayerConfig.save();
+									
+									PlayerConfig.getConfig(player.getName()).set("Messages.Prefix", Message.toString(args));
+									PlayerConfig.save(player.getName());
 									sender.sendMessage(Message.formatMessage("Prefix changed!"));
 								
 								} catch (Exception e)
@@ -327,8 +329,8 @@ public class CommandCustomlogin implements CommandExecutor
 								try
 								{
 
-									PlayerConfig.getConfig().set("Messages.Login", Message.toString(args));
-									PlayerConfig.save();
+									PlayerConfig.getConfig(player.getName()).set("Messages.Login", Message.toString(args));
+									PlayerConfig.save(player.getName());
 									sender.sendMessage(Message.formatMessage("Join message changed!"));
 								
 								} catch (Exception e)
@@ -364,8 +366,8 @@ public class CommandCustomlogin implements CommandExecutor
 								try
 								{
 								
-									PlayerConfig.getConfig().set("Messages.Logout", Message.toString(args));
-									PlayerConfig.save();
+									PlayerConfig.getConfig(player.getName()).set("Messages.Logout", Message.toString(args));
+									PlayerConfig.save(player.getName());
 									sender.sendMessage(Message.formatMessage("Quit message changed!"));
 								
 								} catch (Exception e)
